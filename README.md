@@ -20,8 +20,8 @@
 - [x] Set struct json tag
 - [x] Marshaling data structure to XML representation
 - [x] Request Header
-- [ ] Refactoring and Go Modules
-- [ ] Creating our own servemux/router
+- [x] Refactoring and Go Modules
+- [x] Creating our own servemux/router
 
 # Learning Material
 - [Go Convetion](https://github.com/golang/go/wiki/CodeReviewComments#variable-names)
