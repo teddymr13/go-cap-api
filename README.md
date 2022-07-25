@@ -1,3 +1,16 @@
+# Project Example
+- Banking application
+- Open new account for customer
+- Making Deposit or Withdrawal Transaction
+- Role based access control (RBAC)
+
+# Overview
+- Dev environment and the right tools
+- Hexagonal Architecture
+- Dependency inversion in Go and working with stubs
+- JWT Tokens
+- Banking-Auth microservices based on OAuth standard
+- Unit test for routes and other component using mock and state based test
 # Learning Checkpoint
 ## Basic Web Server
 - [x] Mechanism of HTTP web server
