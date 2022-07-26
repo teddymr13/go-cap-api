@@ -89,7 +89,9 @@ func addCustomer(w http.ResponseWriter, r *http.Request) {
 }
 
 func getNextID() int {
-	cust := customers[len(customers)-1]
+	lastIndex := len(customers) - 1
+	lastCustomer := customers[lastIndex]
+	// cust := customers[len(customers)-1]
 
-	return cust.ID + 1
+	return lastCustomer.ID + 1
 }
