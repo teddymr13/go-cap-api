@@ -42,15 +42,79 @@ func getCustomers(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	// fmt.Fprintln(w, vars["customer_id"])
 
+	// convert int to string
 	customerId := vars["customer_id"]
-	id, _ := strconv.Atoi(customerId)
+	id, err := strconv.Atoi(customerId)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(w, "invalid customer id")
+		return
+	}
 
+	//searching customer data
 	var cust Customer
 	for _, data := range customers {
 		if data.ID == id {
 			cust = data
 		}
 	}
+
+	if cust.ID == 0 {
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprint(w, "customer data not found")
+		return
+	}
+
+	//return customer data
 	w.Header().Add("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(cust)
+}
+
+func updateCustomers(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, _ := strconv.Atoi(vars["customer_id"])
+	for index, data := range customers {
+		if data.ID == id {
+			customers = append(customers[:index], customers[index+1:]...)
+			var updateCustomers Customer
+
+			json.NewDecoder(r.Body).Decode(&updateCustomers)
+			customers = append(customers, updateCustomers)
+			json.NewEncoder(w).Encode(updateCustomers)
+			fmt.Println("update successfully")
+			return
+		}
+	}
+}
+
+func deleteCustomer(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, _ := strconv.Atoi(vars["customer_id"])
+	for index, data := range customers {
+		if data.ID == id {
+			customers = append(customers[:index], customers[index+1:]...)
+		}
+	}
+	fmt.Fprint(w, "Remove Succesfully")
+
+}
+
+func addCustomers(w http.ResponseWriter, r *http.Request) {
+	// decode request body
+	var cust Customer
+	json.NewDecoder(r.Body).Decode(&cust)
+
+	// generate new id
+	nextID := getNextID()
+	cust.ID = nextID
+
+	// save data to array
+	customers = append(customers, cust)
+	w.WriteHeader(http.StatusCreated)
+	fmt.Fprint(w, "customer successfuly created")
+}
+
+func getNextID() int {
+	cust := customers[len(customers)-1]
+	return cust.ID + 1
 }
