@@ -88,6 +88,55 @@ func addCustomer(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "customer successfully created")
 }
 
+func updateCustomer(w http.ResponseWriter, r *http.Request) {
+
+	// * get route variable
+	vars := mux.Vars(r)
+
+	customerId := vars["customer_id"]
+
+	// * convert string to int
+	id, err := strconv.Atoi(customerId)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(w, "invalid customer id")
+		return
+	}
+
+	// * searching customer data
+	var cust Customer
+
+	for customerIndex, data := range customers {
+		if data.ID == id {
+			// * save temp data for validation
+			cust = data
+
+			// * decode request body
+			var newCust Customer
+			json.NewDecoder(r.Body).Decode(&newCust)
+
+			// * do update
+			customers[customerIndex].Name = newCust.Name
+			customers[customerIndex].City = newCust.City
+			customers[customerIndex].ZipCode = newCust.ZipCode
+
+			// fmt.Println(customers)
+
+			w.WriteHeader(http.StatusOK)
+			fmt.Fprintln(w, "customer data updated")
+			return
+		}
+	}
+
+	// ! error if data not find
+	if cust.ID == 0 {
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprint(w, "customer data not found")
+		return
+	}
+
+}
+
 func getNextID() int {
 	lastIndex := len(customers) - 1
 	lastCustomer := customers[lastIndex]
