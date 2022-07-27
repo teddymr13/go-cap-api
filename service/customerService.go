@@ -6,6 +6,7 @@ import (
 
 type CustomerService interface {
 	GetAllCustomer() ([]domain.Customer, error)
+	GetCustomerByID(string) (*domain.Customer, error)
 }
 
 type DefaultCustomerService struct {
@@ -13,9 +14,15 @@ type DefaultCustomerService struct {
 }
 
 func (s DefaultCustomerService) GetAllCustomer() ([]domain.Customer, error) {
+	// * add process here
+
 	return s.repository.FindAll()
 }
 
+func (s DefaultCustomerService) GetCustomerByID(customerID string) (*domain.Customer, error) {
+	return s.repository.FindByID(customerID)
+}
+
 func NewCustomerService(repository domain.CustomerRepository) DefaultCustomerService {
-	return DefaultCustomerService{repository: repository}
+	return DefaultCustomerService{repository}
 }

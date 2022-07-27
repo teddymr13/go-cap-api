@@ -11,7 +11,7 @@ import (
 func Start() {
 
 	// * wiring
-	ch := CustomerHandler{service.NewCustomerService(domain.NewCustomerRepositoryStub())}
+	ch := CustomerHandler{service.NewCustomerService(domain.NewCustomerRepositoryDB())}
 
 	// * create ServeMux
 	mux := mux.NewRouter()
@@ -21,7 +21,7 @@ func Start() {
 	mux.HandleFunc("/customers", ch.getAllCustomers).Methods(http.MethodGet)
 	// mux.HandleFunc("/customers", addCustomer).Methods(http.MethodPost)
 
-	// mux.HandleFunc("/customers/{customer_id:[0-9]+}", getCustomer).Methods(http.MethodGet)
+	mux.HandleFunc("/customers/{customer_id:[0-9]+}", ch.getCustomerByID).Methods(http.MethodGet)
 	// mux.HandleFunc("/customers/{customer_id:[0-9]+}", updateCustomer).Methods(http.MethodPut)
 
 	// * starting the server
