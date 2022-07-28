@@ -10,19 +10,20 @@ import (
 
 func Start() {
 
-	ch := CustomerHandler{service.NewCustomerService(domain.NewCustomerRepositoryStub())}
-	//create ServerMux
-	// mux := http.NewServeMux()
+	// * wiring
+	ch := CustomerHandler{service.NewCustomerService(domain.NewCustomerRepositoryDB())}
+
+	// * create ServeMux
 	mux := mux.NewRouter()
 
 	// * defining routes
 	// mux.HandleFunc("/greet", greet).Methods(http.MethodGet)
 	mux.HandleFunc("/customers", ch.getAllCustomers).Methods(http.MethodGet)
-	// mux.HandleFunc("/customers", addCustomers).Methods(http.MethodPost)
-	// mux.HandleFunc("/customers/{customer_id}", updateCustomers).Methods(http.MethodPut)
-	// mux.HandleFunc("/customers/{customer_id}", deleteCustomer).Methods(http.MethodDelete)
+	// mux.HandleFunc("/customers", addCustomer).Methods(http.MethodPost)
 
-	// mux.HandleFunc("/customers/{customer_id:[0-9]+}", getCustomers).Methods(http.MethodGet)
+	mux.HandleFunc("/customers/{customer_id:[0-9]+}", ch.getCustomerByID).Methods(http.MethodGet)
+	// mux.HandleFunc("/customers/{customer_id:[0-9]+}", updateCustomer).Methods(http.MethodPut)
+
 	// * starting the server
 	http.ListenAndServe(":8080", mux)
 }

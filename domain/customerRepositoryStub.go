@@ -4,16 +4,25 @@ type CustomerRepositoryStub struct {
 	Customer []Customer
 }
 
-func (s CustomerRepositoryStub) FindAll() ([]Customer, error) {
-	return s.Customer, nil
-}
-
 func NewCustomerRepositoryStub() CustomerRepositoryStub {
 	customers := []Customer{
-		{1, "User1", "Jakarta", "123456", "1290", "2022-01-01", "1"},
-		{2, "User2", "Surabaya", "67890", "1290", "2022-01-01", "1"},
-		{3, "User3", "Jakarta", "123456", "1290", "2022-01-01", "1"},
-		{4, "User4", "Surabaya", "67890", "1290", "2022-01-01", "1"},
+		{
+			"1", "User1", "Jakarta", "181818", "2022-01-08", "1",
+		},
+		{
+			"2", "User2", "Bandung", "989898", "2022-01-07", "1",
+		},
+		{
+			"3", "User3", "Jogja", "00556", "2022-01-06", "1",
+		},
+		{
+			"4", "User4", "Bali", "66999", "2022-01-05", "1",
+		},
 	}
 	return CustomerRepositoryStub{Customer: customers}
+}
+
+func (s CustomerRepositoryStub) FindAll() ([]Customer, error) {
+
+	return s.Customer, nil
 }
