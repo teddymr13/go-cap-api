@@ -9,22 +9,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// type Customer struct {
-// 	ID      int    `json:"id" xml:"id"`
-// 	Name    string `json:"name" xml:"name"`
-// 	City    string `json:"city" xml:"city"`
-// 	ZipCode string `json:"zip_code" xml:"zipcode"`
-// }
-
-// var customers []Customer = []Customer{
-// 	{1, "User1", "Jakarta", "12345"},
-// 	{2, "User2", "Surabaya", "67890"},
-// }
-
-// func greet(w http.ResponseWriter, r *http.Request) {
-// 	fmt.Fprint(w, "Hello Celerates!")
-// }
-
 type CustomerHandler struct {
 	service service.CustomerService
 }

@@ -2,6 +2,7 @@ package domain
 
 import (
 	"capi/errs"
+	"capi/logger"
 	"database/sql"
 	"log"
 
@@ -30,10 +31,10 @@ func (d CustomerRepositoryDB) FindByID(customerID string) (*Customer, *errs.AppE
 	err := row.Scan(&c.ID, &c.Name, &c.DateOfBirth, &c.City, &c.ZipCode, &c.Status)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			log.Println("error customer data not found ", err.Error())
+			logger.Error("error customer data not found " + err.Error())
 			return nil, errs.NewNotFoundError("customer not found")
 		} else {
-			log.Println("error scanning customer data ", err.Error())
+			logger.Error("error scanning customer data " + err.Error())
 			return nil, errs.NewUnexpectedError("unexpected database error")
 		}
 	}
