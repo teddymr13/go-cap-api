@@ -46,7 +46,6 @@ func (ch *CustomerHandler) getAllCustomers(w http.ResponseWriter, r *http.Reques
 }
 
 func (ch *CustomerHandler) getCustomerByID(w http.ResponseWriter, r *http.Request) {
-
 	// * get route variable
 	vars := mux.Vars(r)
 
@@ -57,7 +56,6 @@ func (ch *CustomerHandler) getCustomerByID(w http.ResponseWriter, r *http.Reques
 		writeResponse(w, err.Code, err.AsMessage())
 		return
 	}
-
 	// * return customer data
 	writeResponse(w, http.StatusOK, customer)
 }
