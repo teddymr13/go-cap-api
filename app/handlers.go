@@ -1,6 +1,7 @@
 package app
 
 import (
+	"capi/errs"
 	"capi/service"
 	"encoding/json"
 	"net/http"
@@ -31,18 +32,17 @@ type CustomerHandler struct {
 func (ch *CustomerHandler) getAllCustomers(w http.ResponseWriter, r *http.Request) {
 	// fmt.Fprint(w, "get customer endpoint\n")
 	customerStatus := r.URL.Query().Get("status")
-
-	customers, err := ch.service.GetAllCustomer(customerStatus)
-
-	if err != nil {
-		writeResponse(w, err.Code, err.AsMessage())
-		return
+	if customerStatus == "" || customerStatus == "active" || customerStatus == "inactive" {
+		customers, err := ch.service.GetAllCustomer(customerStatus)
+		if err != nil {
+			writeResponse(w, err.Code, err.AsMessage())
+			return
+		} else {
+			writeResponse(w, http.StatusOK, customers)
+		}
 	} else {
-		writeResponse(w, http.StatusOK, customers)
+		writeResponse(w, http.StatusNotFound, errs.NewNotFoundError("NotFound"))
 	}
-	// if r.Header.Get("Content-Type") == "application/xml" {
-	// 	xml.NewEncoder(w).Encode(customers)
-	// }
 }
 
 func (ch *CustomerHandler) getCustomerByID(w http.ResponseWriter, r *http.Request) {
