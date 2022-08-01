@@ -50,19 +50,24 @@ func Start() {
 	// * setup repository
 	customerRepositoryDB := domain.NewCustomerRepositoryDB(dbClient)
 	accountRepositoryDB := domain.NewAccountRepositoryDB(dbClient)
+	authRepositoryDB := domain.NewAuthRepositoryDB(dbClient)
 
 	// * setup service
 	customerService := service.NewCustomerService(customerRepositoryDB)
 	accountService := service.NewAccountService(accountRepositoryDB)
+	authService := service.NewAuthService(authRepositoryDB)
 
 	// * setup handler
 	ch := CustomerHandlers{customerService}
 	ah := AccountHandler{accountService}
+	authH := AuthHandler{authService}
 
 	// * create ServeMux
 	mux := mux.NewRouter()
 
 	// * defining routes
+	mux.HandleFunc("/auth/login", authH.Login).Methods(http.MethodPost)
+
 	mux.HandleFunc("/customers", ch.getAllCustomers).Methods(http.MethodGet)
 	mux.HandleFunc("/customers/{customer_id:[0-9]+}", ch.getCustomerByID).Methods(http.MethodGet)
 	mux.HandleFunc("/customers/{customer_id:[0-9]+}/accounts", ah.NewAccount).Methods(http.MethodPost)
