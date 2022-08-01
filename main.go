@@ -3,10 +3,12 @@ package main
 import (
 	"capi/app"
 	"capi/logger"
+	"fmt"
+	"os"
 )
 
 func main() {
-	// logger.Info("starting application")
-	logger.Info("starting application")
+	fmt.Println(os.Getenv("TEST"))
+	logger.Info("starting application...")
 	app.Start()
 }
