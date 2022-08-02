@@ -2,6 +2,7 @@ package app
 
 import (
 	"capi/domain"
+	"capi/errs"
 	"capi/logger"
 	"capi/service"
 	"errors"
@@ -76,13 +77,21 @@ func Start() {
 	// * defining routes
 	// mux.HandleFunc("/auth/login", authH.Login).Methods(http.MethodPost)
 
-	mux.HandleFunc("/customers", ch.getAllCustomers).Methods(http.MethodGet)
-	mux.HandleFunc("/customers/{customer_id:[0-9]+}", ch.getCustomerByID).Methods(http.MethodGet)
-	mux.HandleFunc("/customers/{customer_id:[0-9]+}/accounts", ah.NewAccount).Methods(http.MethodPost)
-	mux.HandleFunc("/customers/{customer_id:[0-9]+}/accounts/{account_id:[0-9]+}", ah.MakeTransaction).Methods(http.MethodPost)
+	// mux.HandleFunc("/customers", ch.getAllCustomers).Methods(http.MethodGet)
+	// mux.HandleFunc("/customers/{customer_id:[0-9]+}", ch.getCustomerByID).Methods(http.MethodGet)
+	// mux.HandleFunc("/customers/{customer_id:[0-9]+}/accounts", ah.NewAccount).Methods(http.MethodPost)
+	// mux.HandleFunc("/customers/{customer_id:[0-9]+}/accounts/{account_id:[0-9]+}", ah.MakeTransaction).Methods(http.MethodPost)
 
-	mux.Use(authMiddleware)
+	customerR := mux.PathPrefix("/customers").Subrouter()
+	customerR.HandleFunc("/{customer_id:[0-9]+}", ch.getCustomerByID).Methods(http.MethodGet)
+	customerR.HandleFunc("/{customer_id:[0-9]+}/accounts/{account_id:[0-9]+}", ah.MakeTransaction).Methods(http.MethodPost)
 	// * starting the server
+
+	// adminR := mux.PathPrefix("/customers").Subrouter()
+	customerR.HandleFunc("", ch.getAllCustomers).Methods(http.MethodGet)
+	customerR.HandleFunc("/{customer_id:[0-9]+}/accounts", ah.NewAccount).Methods(http.MethodPost)
+	customerR.Use(authMiddleware)
+	// adminR.Use(authMiddleware)
 
 	serverAddr := os.Getenv("SERVER_ADDRESS")
 	serverPort := os.Getenv("SERVER_PORT")
@@ -119,11 +128,9 @@ func loggingMiddleware(next http.Handler) http.Handler {
 func authMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		tokenHeader := r.Header.Get("Authorization")
-
-		// statment kondisi untuk token
 		if tokenHeader == "" {
-			// logger.Info("connection authorization token failed")
-			writeResponse(w, http.StatusUnauthorized, "connection authorization token failed")
+			writeResponse(w, http.StatusUnauthorized, errs.NewAuthenticationError("eror, token cannot be empty"))
+			return
 		}
 		//split token -> ambil tokennya buang "Bearer" nya
 		splitToken := strings.Split(tokenHeader, " ")
@@ -132,16 +139,21 @@ func authMiddleware(next http.Handler) http.Handler {
 		parseToken, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
 			return []byte("rahasia"), nil
 		})
+
 		//check token validation
+		if err != nil {
+			logger.Error("error parsing token")
+			writeResponse(w, http.StatusUnauthorized, errs.NewAuthenticationError("eror parsing token"))
+			return
+		}
+
 		if parseToken.Valid {
-			fmt.Println("token process successfully")
+			logger.Error("token Valid")
 		} else if errors.Is(err, jwt.ErrTokenMalformed) {
-			fmt.Println("That's not even a token")
-		} else if errors.Is(err, jwt.ErrTokenExpired) || errors.Is(err, jwt.ErrTokenNotValidYet) {
-			// Token is either expired or not active yet
-			fmt.Println("Timing is everything")
+			logger.Error("token Invalid")
+			writeResponse(w, http.StatusUnauthorized, errs.NewAuthenticationError("token invalid"))
 		} else {
-			fmt.Println("Couldn't handle this token:", err)
+			logger.Info("Couldn't handle this token:")
 		}
 
 		logger.Info(token)
