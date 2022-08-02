@@ -149,12 +149,13 @@ func authMiddleware(next http.Handler) http.Handler {
 		}
 
 		if parseToken.Valid {
-			logger.Error("token Valid")
+			writeResponse(w, http.StatusOK, parseToken)
 		} else if errors.Is(err, jwt.ErrTokenMalformed) {
-			logger.Error("token Invalid")
-			writeResponse(w, http.StatusUnauthorized, errs.NewAuthenticationError("token invalid"))
+			writeResponse(w, http.StatusUnauthorized, err.Error())
+		} else if errors.Is(err, jwt.ErrTokenExpired) {
+			writeResponse(w, http.StatusUnauthorized, err.Error())
 		} else {
-			logger.Info("Couldn't handle this token:")
+			writeResponse(w, http.StatusUnauthorized, err.Error())
 		}
 
 		logger.Info(token)
