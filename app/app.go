@@ -128,6 +128,7 @@ func loggingMiddleware(next http.Handler) http.Handler {
 func authMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		tokenHeader := r.Header.Get("Authorization")
+		// cek token kosong
 		if tokenHeader == "" {
 			writeResponse(w, http.StatusUnauthorized, errs.NewAuthenticationError("eror, token cannot be empty"))
 			return
