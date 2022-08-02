@@ -122,7 +122,6 @@ func authMiddleware(next http.Handler) http.Handler {
 
 		// statment kondisi untuk token
 		if tokenHeader == "" {
-			// logger.Info("connection authorization token failed")
 			writeResponse(w, http.StatusUnauthorized, "connection authorization token failed")
 		}
 		//split token -> ambil tokennya buang "Bearer" nya
